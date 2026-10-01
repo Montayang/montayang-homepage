@@ -1,0 +1,28 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ResearchList from "../components/ResearchList.astro";
+---
+
+<Layout
+  title="Research"
+  description="Research interests in zero-knowledge proofs, cryptography, and graph algorithms."
+>
+  <header class="page-intro">
+    <p class="eyebrow">AREAS OF INTEREST</p>
+    <h1>
+      Research<span class="accent">.</span>
+    </h1>
+    <p>Zero-knowledge proofs, cryptography, and graph algorithms.</p>
+  </header>
+  <section class="section" aria-labelledby="areas">
+    <h2 id="areas" class="section-title">
+      Research areas
+    </h2>
+    <ResearchList detailed />
+  </section>
+  <p class="page-end">
+    <a href="/#publications-title">
+      View publication <span aria-hidden="true">→</span>
+    </a>
+  </p>
+</Layout>

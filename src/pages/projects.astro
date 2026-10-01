@@ -1,0 +1,31 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProjectList from "../components/ProjectList.astro";
+import { site } from "../data/site";
+---
+
+<Layout
+  title="Projects"
+  description="Software and quantitative trading projects by Xinyang Yang."
+>
+  <header class="page-intro">
+    <p class="eyebrow">SOFTWARE & SYSTEMS</p>
+    <h1>
+      Projects<span class="accent">.</span>
+    </h1>
+    <p>
+      A space for software projects and quantitative trading infrastructure.
+    </p>
+  </header>
+  <section class="section" aria-labelledby="selected">
+    <h2 id="selected" class="section-title">
+      Selected work
+    </h2>
+    <ProjectList />
+  </section>
+  <p class="page-end">
+    <a href={site.github}>
+      Explore GitHub <span aria-hidden="true">↗</span>
+    </a>
+  </p>
+</Layout>

@@ -1,0 +1,19 @@
+---
+import { publication } from "../data/site";
+---
+
+<article class="publication">
+  <h3>
+    {publication.url ? (
+      <a href={publication.url}>{publication.title}</a>
+    ) : (
+      publication.title
+    )}
+  </h3>
+  <p>{publication.authors}</p>
+  {(publication.venue || publication.year) && (
+    <p>
+      {[publication.venue, publication.year].filter(Boolean).join(", ")}
+    </p>
+  )}
+</article>

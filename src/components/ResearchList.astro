@@ -1,0 +1,32 @@
+---
+import { research } from "../data/site";
+interface Props {
+  detailed?: boolean;
+}
+const { detailed = false } = Astro.props;
+---
+
+<div class="research-grid">
+  {research.map((item) => (
+    <article class="research-item" id={item.id}>
+      <span class="item-number">{item.number} / RESEARCH AREA</span>
+      <h3>
+        {detailed ? (
+          item.title
+        ) : (
+          <a href={`/research#${item.id}`}>
+            {item.title}
+            <span aria-hidden="true"> ↗</span>
+          </a>
+        )}
+      </h3>
+      <p>{item.description}</p>
+      <ul class="tags" aria-label="Topics">
+        {item.keywords.map((keyword) => (
+          <li>{keyword}</li>
+        ))}
+      </ul>
+      {detailed && <p class="todo">{item.todo}</p>}
+    </article>
+  ))}
+</div>

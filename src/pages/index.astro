@@ -1,0 +1,61 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Publications from "../components/Publications.astro";
+import { site, projects } from "../data/site";
+---
+
+<Layout>
+  <section class="intro" aria-labelledby="intro-title">
+    <div>
+      <h1 id="intro-title">{site.name}</h1>
+      <p>
+        {site.role}
+        <br />
+        {site.department}
+        <br />
+        {site.institution}
+      </p>
+      <div class="intro-links">
+        <a href={site.github}>GitHub</a>
+        {site.email && <span>{site.emailDisplay}</span>}
+        {site.cv && <a href={site.cv}>CV (PDF)</a>}
+      </div>
+    </div>
+    {site.avatar ? (
+      <img
+        class="avatar"
+        src={site.avatar}
+        alt={site.name}
+        width="150"
+        height="180"
+      />
+    ) : (
+      <div
+        class="avatar avatar-placeholder"
+        role="img"
+        aria-label="Portrait placeholder"
+      ></div>
+    )}
+  </section>
+  <section aria-labelledby="about-title">
+    <h2 id="about-title">About</h2>
+    <p>
+      I am a PhD student at NUS, working with{" "}
+      <a href={site.advisors[0].url}>{site.advisors[0].name}</a> and{" "}
+      <a href={site.advisors[1].url}>{site.advisors[1].name}</a>.
+    </p>
+    <p>{site.background}</p>
+  </section>
+  <section aria-labelledby="publications-title">
+    <h2 id="publications-title">Publication</h2>
+    <Publications />
+  </section>
+  <section aria-labelledby="projects-title">
+    <h2 id="projects-title">Projects</h2>
+    {projects.map((project) => (
+      <p class="project-summary">
+        <a href={project.url}>{project.title}</a> — {project.description}
+      </p>
+    ))}
+  </section>
+</Layout>
