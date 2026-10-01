@@ -9,6 +9,7 @@ export const site = {
     "Xinyang Yang is a PhD student at the National University of Singapore, with research interests in zero-knowledge proofs, cryptography, and graph algorithms.",
   background:
     "Before joining NUS in 2024, I received my B.Eng. in Computer Science from Shanghai Jiao Tong University, where I was a member of the ACM Class.",
+  quantInterest: "I am also interested in quantitative research, particularly systematic trading strategies and reproducible backtesting.",
   advisors: [
     { name: "Jiaheng Zhang", url: "https://zjhzjh123.github.io/" },
     { name: "Yu Chen", url: "https://sites.google.com/view/chenyu94" },

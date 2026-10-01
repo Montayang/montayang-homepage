@@ -16,8 +16,8 @@ import { site, projects } from "../data/site";
         {site.institution}
       </p>
       <div class="intro-links">
-        <a href={site.github}>GitHub</a>
         {site.email && <span>{site.emailDisplay}</span>}
+        <a href={site.github}>GitHub</a>
         {site.cv && <a href={site.cv}>CV (PDF)</a>}
       </div>
     </div>
@@ -26,8 +26,8 @@ import { site, projects } from "../data/site";
         class="avatar"
         src={site.avatar}
         alt={site.name}
-        width="150"
-        height="180"
+        width="1280"
+        height="1368"
       />
     ) : (
       <div
@@ -45,6 +45,7 @@ import { site, projects } from "../data/site";
       <a href={site.advisors[1].url}>{site.advisors[1].name}</a>.
     </p>
     <p>{site.background}</p>
+    <p>{site.quantInterest}</p>
   </section>
   <section aria-labelledby="publications-title">
     <h2 id="publications-title">Publication</h2>

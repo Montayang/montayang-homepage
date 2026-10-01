@@ -64,8 +64,9 @@ section {
   gap: 20px;
 }
 .avatar {
-  width: 150px;
-  height: 180px;
+  width: 240px;
+  height: auto;
+  aspect-ratio: 1280 / 1368;
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -114,7 +115,7 @@ section {
 .skip-link:focus {
   top: 10px;
 }
-@media (max-width: 540px) {
+@media (max-width: 640px) {
   .shell {
     margin: 40px auto;
   }
@@ -123,8 +124,8 @@ section {
     flex-wrap: wrap;
   }
   .avatar {
-    width: 120px;
-    height: 144px;
+    width: 200px;
+    max-width: 100%;
   }
 }
 
