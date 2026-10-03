@@ -1,0 +1,372 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import EquityChart from "./EquityChart.astro";
+import {
+  data,
+  copy,
+  routes,
+  evidence,
+  reportUrl,
+  pct,
+  decimal,
+  cash,
+  integer,
+  type Locale,
+} from "../../data/benchmark/content";
+import "../../styles/benchmark.css";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = copy[locale];
+const other = locale === "en" ? "zh-CN" : "en";
+const winner = data.runs[0];
+const metric = (r: typeof winner, key: string) => `${r.strategy_id}/${key}`;
+---
+
+<Layout
+  title={c.title}
+  description={c.description}
+  lang={locale}
+  alternates={routes}
+  image="/experiments/llm-quant-benchmark/social.png"
+  imageAlt="LLM Quant Benchmark — one-shot proposals, frozen runs, after-cost evidence"
+  wide
+>
+  <article class="benchmark">
+    <nav
+      class="experiment-nav"
+      aria-label={locale === "en" ? "Page navigation" : "页面导航"}
+    >
+      <a href="/">← {c.back}</a>
+      <a href={routes[other]} lang={other} hreflang={other}>
+        {c.switch}
+      </a>
+    </nav>
+    <header class="experiment-intro">
+      <p class="experiment-eyebrow">{c.eyebrow}</p>
+      <h1>{c.title}</h1>
+      <p>{c.intro}</p>
+      <p class="muted">{c.question}</p>
+      <aside class="result-callout" aria-label={c.result}>
+        <p>
+          {c.result} · {winner.label}
+        </p>
+        <div class="result-metrics">
+          <span>
+            <strong data-metric={metric(winner, "performance.total_return")}>
+              {pct(winner.performance.total_return)}
+            </strong>
+            {c.headers[2]}
+          </span>
+          <span>
+            <strong data-metric={metric(winner, "performance.sharpe_ratio")}>
+              {decimal(winner.performance.sharpe_ratio)}
+            </strong>
+            {c.headers[3]}
+          </span>
+          <span>
+            <strong data-metric={metric(winner, "performance.max_drawdown")}>
+              {pct(winner.performance.max_drawdown)}
+            </strong>
+            {c.headers[4]}
+          </span>
+        </div>
+        <p class="muted">{c.resultNote}</p>
+      </aside>
+    </header>
+    <nav class="contents" aria-label={locale === "en" ? "Contents" : "目录"}>
+      {[
+        ["contract", c.contract],
+        ["strategies", c.proposals],
+        ["results", c.results],
+        ["lessons", c.lessons],
+        ["evidence", c.reports],
+      ].map(([id, label]) => (
+        <a href={`#${id}`}>{label}</a>
+      ))}
+    </nav>
+    <section id="contract">
+      <h2>{c.contract}</h2>
+      <dl class="contract-facts">
+        <div>
+          <dt>{c.period}</dt>
+          <dd>
+            <time>{data.interval.start}</time> →{" "}
+            <time>{data.interval.end_exclusive}</time>
+          </dd>
+        </div>
+        <div>
+          <dt>{c.capital}</dt>
+          <dd>{integer(data.initial_equity_usdt)} USDT</dd>
+        </div>
+        <div>
+          <dt>{c.costs}</dt>
+          <dd>
+            {data.costs.taker_fee_bps} {c.fee} + {data.costs.slippage_bps}{" "}
+            {c.slip}
+          </dd>
+        </div>
+      </dl>
+      <ul>
+        {c.rules.map((rule) => (
+          <li>{rule}</li>
+        ))}
+      </ul>
+    </section>
+    <section id="strategies">
+      <h2>{c.proposals}</h2>
+      <div class="strategy-grid">
+        {data.runs.map((r) => {
+          const s = c.strategies[r.strategy_id as keyof typeof c.strategies];
+          return (
+            <article>
+              <p class="model-label">{r.label}</p>
+              <h3>{s[0]}</h3>
+              <p>{s[1]}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+    <section id="results">
+      <h2>{c.results}</h2>
+      <p>{c.ranking}</p>
+      <div
+        class="table-scroll"
+        tabindex="0"
+        role="region"
+        aria-label={c.results}
+      >
+        <table id="leaderboard">
+          <caption>
+            {c.results}·{data.benchmark_id}
+          </caption>
+          <thead>
+            <tr>
+              {c.headers.map((h) => (
+                <th scope="col">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.runs.map((r) => (
+              <tr data-run={r.strategy_id}>
+                <td data-metric={metric(r, "rank")}>{r.rank}</td>
+                <th scope="row">{r.label}</th>
+                <td data-metric={metric(r, "performance.total_return")}>
+                  {pct(r.performance.total_return)}
+                </td>
+                <td data-metric={metric(r, "performance.sharpe_ratio")}>
+                  {decimal(r.performance.sharpe_ratio)}
+                </td>
+                <td data-metric={metric(r, "performance.max_drawdown")}>
+                  {pct(r.performance.max_drawdown)}
+                </td>
+                <td data-metric={metric(r, "risk.total_turnover")}>
+                  {r.risk.total_turnover.toFixed(1)}×
+                </td>
+                <td data-metric={metric(r, "trade_count")}>
+                  {integer(r.trade_count)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">{c.precision}</p>
+    </section>
+    <section id="equity">
+      <h2>{c.path}</h2>
+      <EquityChart locale={locale} />
+    </section>
+    <section id="monthly">
+      <h2>{c.months}</h2>
+      <div
+        class="table-scroll"
+        tabindex="0"
+        role="region"
+        aria-label={c.months}
+      >
+        <table>
+          <caption>{c.months}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{c.month}</th>
+              {data.runs.map((r) => (
+                <th scope="col">{r.label}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.runs[0].monthly
+              .slice(0, data.runs[0].full_months)
+              .map((m, i) => (
+                <tr>
+                  <th scope="row">{m.month}</th>
+                  {data.runs.map((r) => (
+                    <td
+                      class:list={[
+                        "month-cell",
+                        { "positive-month": r.monthly[i].return > 0 },
+                      ]}
+                      data-month={`${r.strategy_id}/${m.month}`}
+                    >
+                      {pct(r.monthly[i].return)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            <tr class="consistency">
+              <th scope="row">{c.positive}</th>
+              {data.runs.map((r) => (
+                <td data-consistency={r.strategy_id}>
+                  {r.positive_full_months}/{r.full_months}
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">
+        {c.terminal} ({data.runs[0].monthly.at(-1)?.month}):{" "}
+        {data.runs.map((r) => (
+          <span class="terminal-value">
+            {r.label}:{" "}
+            <span data-terminal={r.strategy_id}>
+              {pct(r.monthly.at(-1)!.return)}
+            </span>
+          </span>
+        ))}
+      </p>
+    </section>
+    <section id="lessons">
+      <h2>{c.lessons}</h2>
+      {c.lessonsItems.map(([title, body]) => (
+        <div class="lesson">
+          <h3>{title}</h3>
+          <p>{body}</p>
+        </div>
+      ))}
+      <div
+        class="table-scroll"
+        tabindex="0"
+        role="region"
+        aria-label={c.cashCaption}
+      >
+        <table>
+          <caption>{c.cashCaption}</caption>
+          <thead>
+            <tr>
+              {c.cashHeaders.map((h) => (
+                <th scope="col">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.runs.map((r) => (
+              <tr>
+                <th scope="row">{r.label}</th>
+                {(
+                  ["funding_cashflow", "fee_cost", "slippage_cost"] as const
+                ).map((k) => (
+                  <td data-metric={metric(r, `cashflows.${k}`)}>
+                    {cash(r.cashflows[k])}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <section id="audit">
+      <h2>{c.audit}</h2>
+      <p>{c.limitations}</p>
+      <dl class="audit-identities">
+        <dt>{c.benchmark}</dt>
+        <dd>
+          <code>{data.benchmark_id}</code>
+        </dd>
+        <dt>{c.source}</dt>
+        <dd>
+          <a
+            href={`https://github.com/Montayang/bfbt/tree/${data.source_commit}`}
+          >
+            <code>{data.source_commit}</code>
+          </a>
+        </dd>
+        <dt>{c.dataset}</dt>
+        <dd>
+          <code>{data.dataset_snapshot_sha256}</code>
+        </dd>
+      </dl>
+      <details>
+        <summary>{c.identity}</summary>
+        <ul>
+          {data.runs.map((r) => (
+            <li>
+              {r.label}
+              <br />
+              <code>{r.run_id}</code>
+            </li>
+          ))}
+        </ul>
+      </details>
+    </section>
+    <section id="evidence">
+      <h2>{c.reports}</h2>
+      <p>{c.evidenceIntro}</p>
+      <p>
+        <a
+          class="comparison-link"
+          href={`/experiments/llm-quant-benchmark/comparison.${locale}.html`}
+        >
+          {c.comparison} →
+        </a>
+      </p>
+      <ul class="evidence-links">
+        <li>
+          <a
+            href="/experiments/llm-quant-benchmark/homepage-data.json"
+            download
+          >
+            {c.download}
+          </a>
+        </li>
+        <li>
+          <a href="https://github.com/Montayang/bfbt">{c.repository}</a>
+        </li>
+      </ul>
+      <p>
+        {evidence.protocolUrl ? (
+          <a href={evidence.protocolUrl}>{c.protocol}</a>
+        ) : (
+          <>
+            {c.protocol} — <span class="muted">{c.pendingProtocol}</span>
+          </>
+        )}
+      </p>
+      {!evidence.eventBaseUrl && <p class="pending-note">{c.pending}</p>}
+      <ul class="report-list">
+        {data.runs.map((r) => (
+          <li id={`report-${r.strategy_id}`}>
+            <strong>{r.label}</strong>
+            <br />
+            {reportUrl(r, locale) ? (
+              <a href={reportUrl(r, locale)!}>Event report ↗</a>
+            ) : (
+              <span class="muted">{c.pendingReport}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+    <footer class="experiment-footer">
+      <a href="/">← {c.back}</a>
+      <a href={routes[other]} lang={other}>
+        {c.switch}
+      </a>
+    </footer>
+  </article>
+</Layout>

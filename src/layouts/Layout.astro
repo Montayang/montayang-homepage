@@ -5,8 +5,22 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  lang?: string;
+  alternates?: Record<string, string>;
+  image?: string;
+  imageAlt?: string;
+  wide?: boolean;
 }
-const { title, description = site.description, noindex = false } = Astro.props;
+const {
+  title,
+  description = site.description,
+  noindex = false,
+  lang = "en",
+  alternates,
+  image,
+  imageAlt,
+  wide = false,
+} = Astro.props;
 const pageTitle = title
   ? `${title} — ${site.name}`
   : `${site.name} — Research & Software`;
@@ -14,7 +28,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -26,6 +40,33 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content={lang === "zh-CN" ? "zh_CN" : "en_US"} />
+    {alternates &&
+      Object.entries(alternates).map(([locale, path]) => (
+        <link
+          rel="alternate"
+          hreflang={locale}
+          href={new URL(path, Astro.site)}
+        />
+      ))}
+    {alternates?.en && (
+      <link
+        rel="alternate"
+        hreflang="x-default"
+        href={new URL(alternates.en, Astro.site)}
+      />
+    )}
+    {image && (
+      <>
+        <meta property="og:image" content={new URL(image, Astro.site)} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={imageAlt} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={new URL(image, Astro.site)} />
+        <meta name="twitter:image:alt" content={imageAlt} />
+      </>
+    )}
     <meta name="theme-color" content="#ffffff" />
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -33,10 +74,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   </head>
   <body>
     <a class="skip-link" href="#main">
-      Skip to content
+      {lang === "zh-CN" ? "跳转到正文" : "Skip to content"}
     </a>
-    <div class="shell">
-      <main id="main">
+    <div class:list={["shell", { "shell-wide": wide }]}>
+      <main id="main" tabindex="-1">
         <slot />
       </main>
     </div>

@@ -1,0 +1,53 @@
+{
+  "benchmark": "llm-cs-202509-202608-v1",
+  "objects": [
+    {
+      "key": "llm-cs-202509-202608-v1/event_reports/chatgpt-6-astra-ultra/report.en.html",
+      "bytes": 8497336,
+      "sha256": "87a98621702b058db079418b611c9c646288155e51942200a4b4c92c4b44957d",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "key": "llm-cs-202509-202608-v1/event_reports/chatgpt-6-astra-ultra/report.zh-CN.html",
+      "bytes": 8497609,
+      "sha256": "086521264ea397d9d353bcdfa29eb5e740ab239b2be17a0713a359c4bc07772e",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "key": "llm-cs-202509-202608-v1/event_reports/claude-fable-5.1-max/report.en.html",
+      "bytes": 23676295,
+      "sha256": "cbf1c195a33e133a4b9f24888912f6ebc0c3096cb90c9f75f183c39230ec9c6f",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "key": "llm-cs-202509-202608-v1/event_reports/claude-fable-5.1-max/report.zh-CN.html",
+      "bytes": 23676585,
+      "sha256": "3ff4e75e4522f8397615b3ef24559b7eb4257b641769fee65922a14b8ef0acd0",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "key": "llm-cs-202509-202608-v1/event_reports/grok-4.7-xhigh/report.en.html",
+      "bytes": 8627486,
+      "sha256": "dd6601ef9755115ec47827b6c84ab1382bb1efdb37d85c1bd0462fc6535ce955",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "key": "llm-cs-202509-202608-v1/event_reports/grok-4.7-xhigh/report.zh-CN.html",
+      "bytes": 8627759,
+      "sha256": "b1db389572f79595f53a0019279210946e868c3a2af3498fd83ec5dba95d47b7",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "key": "llm-cs-202509-202608-v1/event_reports/kimi-k3-max/report.en.html",
+      "bytes": 8712802,
+      "sha256": "39638b949cab5a3c437ab8c5a06f7fffd4f3e46383b66d06df97ea665ef0691f",
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "key": "llm-cs-202509-202608-v1/event_reports/kimi-k3-max/report.zh-CN.html",
+      "bytes": 8713070,
+      "sha256": "d1322fd58dccb7a9d3dca422573380600bf639553564884f72b2f19a434aeb96",
+      "contentType": "text/html; charset=utf-8"
+    }
+  ]
+}

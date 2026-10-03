@@ -1,0 +1,116 @@
+---
+import { data, copy, type Locale } from "../../data/benchmark/content";
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = copy[locale];
+const values = data.runs.flatMap((r) => r.daily_equity.map((d) => d.equity));
+const min = Math.min(...values),
+  max = Math.max(...values);
+const x = (i: number) =>
+  82 + (i / (data.runs[0].daily_equity.length - 1)) * 710;
+const y = (v: number) => 280 - ((v - min) / (max - min)) * 245;
+const styles = [
+  { color: "#28557d", dash: "" },
+  { color: "#3f454b", dash: "8 4" },
+  { color: "#72777c", dash: "3 4" },
+  { color: "#52585f", dash: "10 3 2 3" },
+];
+---
+
+<figure class="equity-figure">
+  <div
+    class="chart-scroll"
+    tabindex="0"
+    role="region"
+    aria-label={c.chartLabel}
+  >
+    <svg
+      viewBox="0 0 840 335"
+      role="img"
+      aria-labelledby="equity-title equity-desc"
+    >
+      <title id="equity-title">{c.chartLabel}</title>
+      <desc id="equity-desc">
+        {c.chartNote}{" "}
+        {data.runs
+          .map((r) => `${r.label}: ${r.daily_equity.at(-1)?.equity} USDT`)
+          .join("; ")}
+      </desc>
+      {[min, data.initial_equity_usdt, max].map((v) => (
+        <g>
+          <line x1="82" x2="792" y1={y(v)} y2={y(v)} stroke="#e1e4e6" />
+          <text x="74" y={y(v) + 4} text-anchor="end">
+            {v === data.initial_equity_usdt ? v : v.toFixed(2)}
+          </text>
+        </g>
+      ))}
+      {data.runs.map((r, i) => (
+        <polyline
+          data-series={r.strategy_id}
+          points={r.daily_equity
+            .map((d, j) => `${x(j)},${y(d.equity)}`)
+            .join(" ")}
+          fill="none"
+          stroke={styles[i].color}
+          stroke-dasharray={styles[i].dash}
+          stroke-width="2"
+        />
+      ))}
+      <text x="82" y="315">
+        {data.runs[0].daily_equity[0].date}
+      </text>
+      <text x="792" y="315" text-anchor="end">
+        {data.runs[0].daily_equity.at(-1)?.date}
+      </text>
+    </svg>
+  </div>
+  <ul class="chart-legend">
+    {data.runs.map((r, i) => (
+      <li>
+        <svg viewBox="0 0 40 10" aria-hidden="true">
+          <line
+            x1="0"
+            x2="40"
+            y1="5"
+            y2="5"
+            stroke={styles[i].color}
+            stroke-width="2"
+            stroke-dasharray={styles[i].dash}
+          />
+        </svg>
+        {r.label}
+      </li>
+    ))}
+  </ul>
+  <figcaption>{c.chartNote}</figcaption>
+</figure>
+<details class="equity-values">
+  <summary>{c.tableData}</summary>
+  <div class="table-scroll" tabindex="0" role="region" aria-label={c.tableData}>
+    <table>
+      <caption>{c.chartLabel}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{c.date}</th>
+          {data.runs.map((r) => (
+            <th scope="col">{r.label}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {data.runs[0].daily_equity.map((d, i) => (
+          <tr>
+            <th scope="row">{d.date}</th>
+            {data.runs.map((r) => (
+              <td data-daily={`${r.strategy_id}/${d.date}`}>
+                {r.daily_equity[i].equity}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</details>

@@ -49,3 +49,7 @@ Official references:
 - https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/
 - https://developers.cloudflare.com/pages/get-started/git-integration/
 - https://developers.cloudflare.com/pages/configuration/custom-domains/
+
+## Experiment pages
+
+The bilingual LLM Quant Benchmark is documented in [docs/llm-quant-benchmark.md](docs/llm-quant-benchmark.md), including source-data validation, preview routes and the pending large-report hosting plan. Validate it after building with `python3 scripts/check-benchmark.py`.
