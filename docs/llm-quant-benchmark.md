@@ -103,3 +103,23 @@ No new npm dependencies or runtime services. The article itself makes no report 
 ## Release verification — 2026-10-04 (Asia/Singapore)
 
 The owner completed R2 setup. All eight production report URLs returned HTTP 200 with `text/html`; downloaded lengths and SHA-256 match the original manifest. The approved report base URL is now active in the native pages and generated comparison links. Large report bytes remain outside Git. The earlier pending-hosting sections describe the preview workflow, not the release state.
+
+## Prior-period validation (2026-10-06)
+
+Added after the original leaderboard at `#prior-validation` in both languages.
+The original frozen JSON, ranking, reports and evaluation narrative are unchanged.
+The follow-up selected only the observed winner; it is not an unselected strict
+out-of-sample test. Strategy parameters, factors, execution rules and costs were
+not adjusted based on the new period's results.
+
+The owner supplied the verified results for `gpt-brm-prior-202409-202508-v1`,
+run `evt-25a247cb3a55c0065ece87e4`. Display values and identities are preserved in
+`src/data/benchmark/prior-validation.ts`; the original-year comparison is formatted
+from the original `homepage-data.json`. Additive attribution is explicitly separate
+from compounded total return. Manifest verification is attributed to BFBT; this
+website update did not receive or independently hash the formal artifacts.
+
+The public original RESULTS.md was checked and still contains only the four-model
+experiment. There is no public standalone Event HTML report for this follow-up,
+so no report link or R2 object is invented. No additional hosting is required.
+The existing canonical URLs, hreflang, share image and static rendering remain.

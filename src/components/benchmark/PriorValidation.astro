@@ -1,0 +1,103 @@
+---
+import { data, pct, decimal, type Locale } from "../../data/benchmark/content";
+import { priorValidation as v } from "../../data/benchmark/prior-validation";
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const zh = locale === "zh-CN";
+const t = (en: string, cn: string) => zh ? cn : en;
+const winner = data.runs[0];
+const headers = [t("Period", "时期"), t("Total return", "总收益率"), "Sharpe", t("Max drawdown", "最大回撤"), t("Turnover", "换手倍数")];
+const original = [pct(winner.performance.total_return), decimal(winner.performance.sharpe_ratio), pct(winner.performance.max_drawdown), `${winner.risk.total_turnover.toFixed(2)}×`];
+const additional = [
+  [t("Annualized return", "年化收益率"), v.annualizedReturn],
+  [t("Sortino ratio", "Sortino 比率"), v.sortino],
+  [t("Ending equity", "期末权益"), v.endingEquity],
+  [t("Fill records", "成交记录数"), v.fills],
+  [t("Average gross exposure", "平均总敞口"), v.averageGross],
+  [t("Average absolute net exposure", "平均绝对净敞口"), v.averageAbsoluteNet],
+  [t("Maximum gross exposure", "最大总敞口"), v.maximumGross],
+];
+const attribution = [
+  [t("Gross price contribution", "价格毛贡献"), v.grossPrice],
+  [t("Funding contribution", "资金费贡献"), v.funding],
+  [t("Fee drag", "手续费拖累"), v.feeDrag],
+  [t("Slippage drag", "滑点拖累"), v.slippageDrag],
+  [t("Additive net contribution", "加法净贡献"), v.additiveNet],
+];
+---
+<section id="prior-validation" aria-labelledby="prior-validation-title">
+  <h2 id="prior-validation-title">{t("Prior-period validation", "冠军策略的前期样本复验")}</h2>
+  <p>{t(
+    "After winning the original evaluation, would the same strategy still hold up in an earlier year? BFBT ran Buffered Relative Momentum, submitted by ChatGPT 6 Astra Ultra, on the preceding annual period. Its parameters, factors, execution rules and cost assumptions were not adjusted in response to the earlier-period results.",
+    "在原评估年度获胜后，同一策略放到更早一年是否仍然成立？BFBT 对 ChatGPT 6 Astra Ultra 提交的 Buffered Relative Momentum 进行了前一年度的独立复验。策略参数、因子、执行规则和成本假设均未根据新时期的结果调整。"
+  )}</p>
+  <p class="pending-note">{t(
+    "This follow-up was conducted only for the winner, selected after the original leaderboard was observed. It remains separate from the four-model ranking and is not an unselected, strict out-of-sample test.",
+    "这次追加实验是在看到原排行榜后，仅对选出的冠军进行的。它不并入四模型公平排行榜，也不属于未经选择的严格样本外测试。"
+  )}</p>
+  <div class="validation-cards">
+    <article class="result-callout">
+      <h3>{t("Earlier year · follow-up validation", "更早年度 · 追加复验")}</h3>
+      <p>{v.period}</p>
+      <div class="result-metrics"><span><strong>{v.totalReturn}</strong>{headers[1]}</span><span><strong>{v.sharpe}</strong>Sharpe</span></div>
+      <p>{t("The frozen strategy remained profitable after costs and historical funding.", "冻结策略计入成本与历史资金费后，仍录得正收益。")}</p>
+    </article>
+    <article class="result-callout">
+      <h3>{t("Original year · four-model winner", "原评估年度 · 四模型冠军")}</h3>
+      <p>2025-09–2026-08</p>
+      <div class="result-metrics"><span><strong>{original[0]}</strong>{headers[1]}</span><span><strong>{original[1]}</strong>Sharpe</span></div>
+      <p>{t("The original ranking and its evaluation rules remain unchanged.", "原始排名与评估规则保持不变。")}</p>
+    </article>
+  </div>
+  <div class="table-scroll" tabindex="0" role="region" aria-label={t("Annual comparison", "年度对比")}>
+    <table id="prior-comparison">
+      <caption>{t("Same strategy, two adjacent annual periods", "同一策略，两个相邻年度")}</caption>
+      <thead><tr>{headers.map(h => <th scope="col">{h}</th>)}</tr></thead>
+      <tbody>
+        <tr><th scope="row">{v.period}</th>{[v.totalReturn, v.sharpe, v.maxDrawdown, v.turnover].map(value => <td>{value}</td>)}</tr>
+        <tr><th scope="row">2025-09–2026-08</th>{original.map(value => <td>{value}</td>)}</tr>
+      </tbody>
+    </table>
+  </div>
+  <h3 class="validation-subheading">{t("What was held fixed", "复验保持了什么")}</h3>
+  <p>{t(
+    "The evaluation interval was [2024-09-01, 2025-09-01), with warm-up beginning on 2024-08-01 and initial equity of 100,000 USDT. The portfolio targeted 50% long gross and 50% short gross exposure, with a 5 bp taker fee, 2 bp slippage and actual historical funding. Orders could fill no earlier than the next minute’s open after a decision. The dataset contains 518 contracts and approximately 224 million one-minute bars.",
+    "回测区间为 [2024-09-01, 2025-09-01)，预热自 2024-08-01 开始，初始权益为 100,000 USDT。组合目标为 50% 多头总敞口与 50% 空头总敞口，Taker 手续费 5 bp、滑点 2 bp，并使用实际历史资金费。决策后最早于下一分钟开盘成交。数据覆盖 518 个合约、约 2.24 亿条一分钟 K 线。"
+  )}</p>
+  <details>
+    <summary>{t("Additional prior-period metrics", "展开前期复验的其他指标")}</summary>
+    <dl class="contract-facts validation-facts">{additional.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+  </details>
+  <h3 class="validation-subheading">{t("Funding and costs are part of the result", "资金费与成本也是结果的一部分")}</h3>
+  <p>{t(
+    "Price performance alone does not explain the outcome. Historical funding contributed positively in the earlier year, while turnover incurred both fees and slippage. Funding was also material in the original evaluation, as shown in its cashflow table below; neither year should be presented as a pure price-return result.",
+    "结果不能只看价格收益。更早年度的历史资金费带来了正贡献，而换手产生了手续费与滑点拖累。原评估年度的资金费影响同样重要，详见下方原实验的现金流表；两个时期都不应被描述为纯价格收益。"
+  )}</p>
+  <dl class="contract-facts validation-facts">{attribution.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+  <p class="table-note">{t(
+    "These are additive period contributions, not compounded total return. The reported +65.68% additive net contribution and +85.38% total return use different aggregation conventions. Values retain their published precision; rounded components may not sum exactly to the reported net.",
+    "以上为期间加法归因，并非复利总收益率。已报告的 +65.68% 加法净贡献与 +85.38% 总收益率采用不同的汇总口径。数值保留发布精度，四舍五入后的分项之和可能不等于报告的净贡献。"
+  )}</p>
+  <h3 class="validation-subheading">{t("More evidence, with a clear boundary", "证据增强，但边界仍需明确")}</h3>
+  <p>{t(
+    "The same frozen strategy was profitable in the earlier year and had better risk-adjusted performance. This strengthens the evidence that it can work across periods. But two adjacent years, with a follow-up selected after observing the winner, do not establish long-term effectiveness or future profitability. No market-beating claim is made.",
+    "同一冻结策略在更早一年仍为正收益，且风险调整后表现更好，这增强了策略跨时期有效的证据。但两个相邻年度，加上看到排行榜后才选择冠军追加复验，仍不足以证明长期有效或未来可盈利，也不能据此声称战胜市场。"
+  )}</p>
+  <p>{t(
+    "The current contract snapshot cannot fully reconstruct exchange status at every historical timestamp. Point-in-time eligibility inferred from observed bars, historical boundaries and trailing liquidity retains this limitation. This is historical research, not investment advice. BFBT has no affiliation, endorsement, sponsorship or financial relationship with Binance.",
+    "当前合约快照无法完整还原每个历史时点的交易所状态；依据已观测 K 线、历史边界与滚动流动性推断时点资格，仍保留这一局限。本页为历史研究，不是投资建议。BFBT 与 Binance 没有隶属、认可、赞助或利益关系。"
+  )}</p>
+  <details>
+    <summary>{t("Validation identity and provenance", "复验身份与来源")}</summary>
+    <dl class="audit-identities">
+      <dt>Experiment ID</dt><dd><code>{v.experimentId}</code></dd>
+      <dt>Event run ID</dt><dd><code>{v.runId}</code></dd>
+      <dt>{t("Strategy / model / factor version", "策略 / 模型 / 因子版本")}</dt><dd>{v.strategy} / {v.model} / <code>{v.factor}</code></dd>
+      <dt>DatasetSnapshot SHA-256</dt><dd><code>{v.snapshot}</code></dd>
+      <dt>Source commit</dt><dd><a href={`https://github.com/Montayang/bfbt/tree/${v.commit}`}><code>{v.commit}</code></a></dd>
+    </dl>
+    <p>{t("BFBT reports that all formal artifact manifest hashes have passed verification. Prior-period metrics and identities on this page were supplied by the experiment owner.", "据 BFBT 提供的核验结果，所有正式产物 manifest 哈希均已通过核验。本页前期复验指标与身份信息由实验负责人提供。")}</p>
+    <p><a href="https://github.com/Montayang/bfbt">BFBT</a> · <a href="https://github.com/Montayang/bfbt/blob/main/docs/research/llm_cross_sectional_benchmark_2025_2026/RESULTS.md">{t("Original four-model results", "原四模型实验结果")}</a></p>
+  </details>
+  <p class="table-note">{t("No standalone public HTML Event report is available for this validation yet. Its verified metrics and run ID are shown here; the report links below belong to the original four-model experiment.", "本次复验尚无公开的独立 HTML Event 报告，现先展示经核验的指标与 run ID；下方报告入口均属于原四模型实验。")}</p>
+</section>

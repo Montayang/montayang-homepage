@@ -5,6 +5,28 @@
 .benchmark {
   --experiment-accent: #28557d;
 }
+.validation-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin: 24px 0;
+}
+.validation-cards .result-callout {
+  margin-top: 0;
+}
+.validation-subheading {
+  margin-top: 28px;
+}
+.validation-facts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 640px) {
+  .validation-cards,
+  .validation-facts {
+    grid-template-columns: 1fr;
+  }
+}
 .benchmark a {
   color: var(--experiment-accent);
 }

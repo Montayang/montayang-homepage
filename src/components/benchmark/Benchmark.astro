@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import EquityChart from "./EquityChart.astro";
+import PriorValidation from "./PriorValidation.astro";
 import {
   data,
   copy,
@@ -80,6 +81,7 @@ const metric = (r: typeof winner, key: string) => `${r.strategy_id}/${key}`;
         ["contract", c.contract],
         ["strategies", c.proposals],
         ["results", c.results],
+        ["prior-validation", locale === "en" ? "Prior-period validation" : "前期样本复验"],
         ["lessons", c.lessons],
         ["evidence", c.reports],
       ].map(([id, label]) => (
@@ -176,6 +178,7 @@ const metric = (r: typeof winner, key: string) => `${r.strategy_id}/${key}`;
       </div>
       <p class="table-note">{c.precision}</p>
     </section>
+    <PriorValidation locale={locale} />
     <section id="equity">
       <h2>{c.path}</h2>
       <EquityChart locale={locale} />
